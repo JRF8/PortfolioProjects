@@ -1,0 +1,38 @@
+/*myStyle.css*/
+h1, h2{
+  color: white;
+  font-style: italic;
+  font-weight:bolder;
+  font-size: 1em;
+  padding: 10px;
+  border: 2px dotted blue;
+  background-color: purple;
+  margin: 30px 0;
+}
+
+.links{
+  color: hotpink;
+}
+
+p{
+  color: yellow;
+  font-style: normal;
+  font-weight: lighter;
+  font-size: small;
+  hyphens: auto;
+}
+
+.wrapper{
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 2;
+  grid-auto-rows: 2;
+  grid-gap: 10px;
+  grid-area: auto;
+  //width: 70%;
+  text-align: center;
+  background-image: url("Amoy-MenuBar-bg.jpg");
+  font-family: monospace;
+  font-variant: small-caps;
+  font-size: 25px;
+}
