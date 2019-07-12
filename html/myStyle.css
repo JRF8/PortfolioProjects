@@ -1,38 +1,80 @@
 /*myStyle.css*/
-h1, h2{
-  color: white;
-  font-style: italic;
-  font-weight:bolder;
-  font-size: 1em;
-  padding: 10px;
-  border: 2px dotted blue;
-  background-color: purple;
-  margin: 30px 0;
+@font-face {
+  font-family: barbaro;
+  src: url("barbaro.ttf");
 }
 
-.links{
-  color: hotpink;
+body {
+  background-image: url("arch.png");
+  background-size: 100px;
+  background-color: black;
 }
 
-p{
-  color: yellow;
-  font-style: normal;
-  font-weight: lighter;
-  font-size: small;
-  hyphens: auto;
-}
-
-.wrapper{
+.header {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 2;
-  grid-auto-rows: 2;
-  grid-gap: 10px;
-  grid-area: auto;
-  //width: 70%;
+  grid-template-columns: repeat(2, 1fr);
+  //grid-auto-columns: minmax(50px, auto);
+  grid-auto-rows: minmax(50px, auto);
+  width: 100%;
+}
+
+.header>div {
+  padding: 1em;
+  height: inherit;
+}
+
+#image {
+  /*  background-image: url("jesse2.jpg");
+  background-size: contain;
+  background-repeat: no-repeat;*/
+  height: 95%;
+  width: 95%;
+  align-content: center;
+}
+
+#image>img {
+  height: inherit;
+  width: inherit;
+}
+
+#title {
+  background: gray;
+  color: darkblue;
+  font-family: barbaro;
+  padding: 1em;
+  font-size: 3em;
   text-align: center;
-  background-image: url("Amoy-MenuBar-bg.jpg");
-  font-family: monospace;
-  font-variant: small-caps;
-  font-size: 25px;
+  height: inherit;
+}
+
+#title>p {
+  font-size: 0.5em;
+}
+
+.pagebody {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 20px;
+  width: 100%;
+  background-color: darkblue;
+  color: gray;
+}
+
+.section {
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  border: 10px double black;
+}
+
+.section>div:nth-child(odd) {
+  font-style: italic;
+  font-size: 2em;
+}
+
+.section>div:nth-child(even) {
+  margin-top: -20px;
+}
+
+#project-content>ul a, #ext-link-content>ul a {
+  color: hotpink;
 }
