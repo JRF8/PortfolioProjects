@@ -1,11 +1,11 @@
 /*myStyle.css*/
 @font-face {
   font-family: barbaro;
-  src: url("barbaro.ttf");
+  src: url("assets/barbaro.ttf");
 }
 
 body {
-  background-image: url("arch.png");
+  background-image: url("assets/arch.png");
   background-size: 100px;
   background-color: black;
 }
