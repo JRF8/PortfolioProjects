@@ -19,8 +19,10 @@
   document.onclick = function(event) {
     var node = event.target;
     if (node.name === "dec_value") {
+      bin_field.value = '';
       return;
     } else if (node.name === "bin_value") {
+      dec_field.value = '';
       return;
     } else {
       checkAndCalculate();
@@ -66,10 +68,10 @@
   }
 
   function checkAndCalculate() {
-    if (bin_field.value == '') {
+    if (dec_field.value != '' && dec_field.value != "NaN") {
       bin_field.value = parseInt(dec_field.value).toString(2);
-    } else if (dec_field.value == '') {
-      dec_field.value = parseInt(bin_field.value).toString(10);
+    } else if (bin_field.value != '' || bin_field.value != "NaN") {
+      dec_field.value = parseInt(bin_field.value,2).toString(10);
     }
   }
 
