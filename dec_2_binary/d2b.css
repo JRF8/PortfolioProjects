@@ -1,0 +1,31 @@
+body{
+  margin: 100px;
+  padding: 2em;
+  border: solid 10px darkgray;
+  background-color: maroon;
+}
+
+#form_title{
+  color: darkgray;
+  font-size: 4em;
+}
+
+.form{
+  padding: 2em;
+  align-self: stretch;
+}
+
+.label{
+  color:darkgray;
+}
+
+/*Input code here*/
+.input_field>input{
+  height: 2em;
+  background-color: white;
+  color: black;
+}
+
+#radio{
+  color:darkgray;
+}
