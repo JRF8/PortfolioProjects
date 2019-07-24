@@ -1,6 +1,7 @@
 //Lines to add eventListeners to the radio buttons
 (function() {
   "use strict";
+
   //GLOBALS
   let title = document.getElementById('form_title'),
     dec_field = document.getElementById('dec_field').childNodes[1],
@@ -9,15 +10,30 @@
 
   // set up a couple starting values:
   toggleD2B();
+  dec_field.value = '';
+  bin_field.value = '';
+
   // set up event listeners
   rbArray.forEach(rbChecker); // will loop on radio buttons and set up event listeners
+
+  document.onclick = function(event) {
+    var node = event.target;
+    if (node.name === "dec_value") {
+      return;
+    } else if (node.name === "bin_value") {
+      return;
+    } else {
+      checkAndCalculate();
+    }
+  }
 
 
   //Function Calls:
 
-
   function rbChecker(element, index) {
     element.addEventListener("click", function() {
+      dec_field.value = '';
+      bin_field.value = '';
       switch (index) {
         case 0:
           toggleD2B();
@@ -48,5 +64,15 @@
     bin_field.style.backgroundColor = "white";
     dec_field.style.backgroundColor = "darkgray";
   }
+
+  function checkAndCalculate() {
+    if (bin_field.value == '') {
+      bin_field.value = parseInt(dec_field.value).toString(2);
+    } else if (dec_field.value == '') {
+      dec_field.value = parseInt(bin_field.value).toString(10);
+    }
+  }
+
+
 
 })();
