@@ -43,6 +43,9 @@
         case 1:
           toggleB2D();
           break;
+        case 2:
+          toggleTwosComp();
+          break;
       }
     });
   }
@@ -67,13 +70,87 @@
     dec_field.style.backgroundColor = "darkgray";
   }
 
-  function checkAndCalculate() {
-    if (dec_field.value != '' && dec_field.value != "NaN") {
-      bin_field.value = parseInt(dec_field.value).toString(2);
-    } else if (bin_field.value != '' || bin_field.value != "NaN") {
-      dec_field.value = parseInt(bin_field.value,2).toString(10);
+  function toggleTwosComp() {
+    var rb = rbArray[2];
+    switch (rb.value) {
+      case "false":
+        rb.checked = true;
+        rb.value = true;
+        break;
+      case "true":
+        rb.checked = false;
+        rb.value = false;
+        break;
     }
   }
+
+  function checkAndCalculate() {
+    var d2b;
+    if (dec_field.value != '' && dec_field.value != "NaN") {
+      d2b = true;
+      bin_field.value = parseInt(dec_field.value).toString(2);
+      maybeCalcTwosComp(d2b);
+    } else if (bin_field.value != '' || bin_field.value != "NaN") {
+      d2b = false;
+      maybeCalcTwosComp(d2b);
+      dec_field.value = parseInt(bin_field.value, 2).toString(10);
+    }
+  }
+
+  function maybeCalcTwosComp(d2b) {
+    var dv = dec_field.value,
+      bv = bin_field.value;
+    var tc = rbArray[2].value;
+    switch (d2b) {
+      case true:
+        dv < 0 ? calcTwosComp() : "not negative";
+        break;
+      case false:
+        tc === true ? calcTwosComp() : "tc rb not checked";
+        break;
+      default:
+        "your code doesn't work"
+    }
+  }
+
+  // logic functions here:
+  function calcTwosComp() {
+    var binVal = bin_field.value.toString().split("")
+    for (var i = binVal.length - 1; i >= 0; i--) {
+      binVal[i] == 0 ? binVal[i] = 1 : binVal[i] = 0;
+    }
+    alert(binVal[0] + " " + binVal[1] + " " + binVal[2] + " " + binVal[3])
+    carry = 1;
+    for (var i = binVal.length - 1; i >= 0; i--) {
+      var result = adder(binVal[i], 0, carry);
+      binVal[i] = result.v;
+      carry = result.c;
+    }
+  }
+
+  function xor(a, b) {
+    var v = 0;
+    ((a && b) === 1) ? v = 0: ((a || b) === 0) ? v = 0 : v = 1;
+    return v;
+  }
+
+  function adder(a, b, c) {
+    if ((typeof(c) === "undefined") || (c === 0)) {
+      var c = a & b;
+      var v = xor(a, b);
+    } else if (a && b && c) {
+      v = 1, c = 1;
+    } else if (xor(a, b) && c === 1) {
+      v = 0, c = 1;
+    } else {
+      v = 1, c = 0;
+    }
+    return {
+      v,
+      c
+    }
+  }
+
 
 
 
