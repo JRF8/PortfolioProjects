@@ -24,7 +24,10 @@
     } else if (node.name === "bin_value") {
       dec_field.value = '';
       return;
-    } else {
+    } else if (node.name === "twos_comp"){
+      return;
+    }
+    else {
       checkAndCalculate();
     }
   }
@@ -100,17 +103,19 @@
   function maybeCalcTwosComp(d2b) {
     var dv = dec_field.value,
       bv = bin_field.value;
-    var tc = rbArray[2].value;
+    var tc = rbArray[2].checked;
     switch (d2b) {
       case true:
         dv < 0 ? calcTwosComp() : "not negative";
         break;
       case false:
-        tc === true ? calcTwosComp() : "tc rb not checked";
+        tc == true ? bv = calcTwosComp() : "tc rb not checked";
         break;
       default:
         "your code doesn't work"
     }
+    bin_field.value = bv;
+    dec_field.value = dv;
   }
 
   // logic functions here:
@@ -119,13 +124,14 @@
     for (var i = binVal.length - 1; i >= 0; i--) {
       binVal[i] == 0 ? binVal[i] = 1 : binVal[i] = 0;
     }
-    alert(binVal[0] + " " + binVal[1] + " " + binVal[2] + " " + binVal[3])
-    carry = 1;
+    var carry = 1;
     for (var i = binVal.length - 1; i >= 0; i--) {
       var result = adder(binVal[i], 0, carry);
       binVal[i] = result.v;
       carry = result.c;
     }
+    carry === 1 ? binVal[binVal.length] = carry : "";
+    return binVal;
   }
 
   function xor(a, b) {
