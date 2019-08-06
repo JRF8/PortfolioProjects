@@ -1,13 +1,14 @@
 import re
+from array import array
 
 def main():
-    f = openFile()
-    loopFile(f)
+    f1 = openOriginal()
+    loopFile(f1)
 
-def openFile():
+def openOriginal():
     #open a file
-    f = open("test1.patch","r")
-    return f
+    return open("test1.patch","r")
+
 
 def loopFile(f):
     for x in f:
@@ -16,14 +17,35 @@ def loopFile(f):
 def regexMatch(x):
     #x is a single line in the file
     #@@ -11,6 +11,6 @@ ohh, its line 10 now
-    match = re.search("(@@ )(-\d+,\d+)( )(\+\d+,\d+)",x)
+    pattern = compiledPattern()
+    #the match() function will apply the pre-compiled regex called pattern to the string to search (x)
+    match = pattern.match(x)
     if match:
-        processLine(x)
+        processLine(match)
     else:
         return
 
-def processLine(x):
-    #x is the line found by our regular expression search
-    #for now, let's just print what we have until this is completed.
-    print(x)
+def compiledPattern():
+    #@@ -11,6 +11,6 @@ ohh, its line 10 now
+    # the following line compiles a regular expression ahead of time for use later
+    return re.compile("([\D]+)(-)([\d]+),([\d]+)([\D]+)(\+)([\d]+),([\d]+)([\D]+)")
+
+def processLine(match):
+    #match.groups() returns an iterable list of the pieces of the match
+    a = []
+    for i, s in enumerate(match.groups()):
+        if representsInt(s):
+            a.append(str(int(s)+1))
+        else:
+            a.append(s)
+    print(a)
+
+def representsInt(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+#def addOne(myIntStr):
+    #return str(int(myIntStr) + 1)
 main()
