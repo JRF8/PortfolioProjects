@@ -5,10 +5,12 @@ def main():
     f1 = openOriginal()
     origLineList = loopFile(f1)
     newLineList = loopOrigLineList(origLineList)
+    processedList = []
+    for singlePgm in newLineList:
+        processedList = processList(singlePgm)
 
 def loopOrigLineList(lineList):
     patProgChange = compProgChange()
-    patLineChange = compLineChange()
     newLineList = []
     newLineSubList = []
     #flg will indicate if we are modifying the contents of the patch in this area.
@@ -21,9 +23,8 @@ def loopOrigLineList(lineList):
         else:
             newLineSubList.append(line)
     newLineList = appendAList(newLineList, newLineSubList)
-    for subList in newLineList:
-        print(subList)
-        
+    return newLineList
+
 def appendAList(a1, a2):
     #a2 is the list to append to the target list, a1
     #don't want to append a2 to a1 if a2 is empty
@@ -33,8 +34,9 @@ def appendAList(a1, a2):
         a1.append(a2)
     return a1
 
-def isNprLogic(nextLine):
-    if nextLine.endswith(".npr-logic"):
+def isNprLogic(line):
+    print(line)
+    if line.endswith(".npr-logic\n"):
         return True
     else:
         return False
@@ -68,16 +70,57 @@ def compProgChange():
     #compilation for regex to find program changes:
     return re.compile("^[Dd]iff")
 
-def processLine(match):
-    #match.groups() returns an iterable list of the pieces of the match
-    a = []
-    for i, s in enumerate(match.groups()):
-        if representsInt(s):
-            v = addToLineNums(s)
-            a.append(v)
+def compPgmInfo():
+    #--- a/test1.npr-logic
+    #compilation for regex to locate pgm name line
+    return re.compile("[-+]{3} .*.npr-[\w]+")
+
+def processList(singlePgm):
+    #line at index 2
+    if isNprLogic(singlePgm[2]):
+        return manipList(singlePgm)
+    else:
+        return singlePgm
+
+def manipList(singlePgm):
+    #first let's gather the index locations of all line change tags
+    iLoc = []
+    patLineChange = compLineChange()
+    for i, line in enumerate(singlePgm):
+        if regexMatch(patLineChange, line):
+            iLoc.append(i)
+    #now time to look for the - lines we are replacing.
+    counter = 0
+    for n, i in enumerate(iLoc):
+        if nextILoc(n+1, iLoc):
+            counter += processLineRange(singlePgm, i, iLoc[n+1])
         else:
-            a.append(s)
-    print(a)
+            counter += processLineRange(singlePgm, i, "none")
+    print(counter)
+
+def processLineRange(singlePgm, begin, end):
+    count = 0
+    pgmInfoLine = compPgmInfo()
+    if representsInt(end):
+        for line in singlePgm[begin:end]:
+            if regexMatch(pgmInfoLine, line):
+                None
+            elif line[0] == "-":
+                count+=1
+    else:
+        for line in singlePgm[begin:]:
+            if regexMatch(pgmInfoLine, line):
+                None
+            elif line[0] == "-":
+                count+=1
+    return count
+
+def nextILoc(n, iLoc):
+    try:
+        v = iLoc[n]
+        return True
+    except IndexError:
+        return False
 
 def representsInt(s):
     try:
