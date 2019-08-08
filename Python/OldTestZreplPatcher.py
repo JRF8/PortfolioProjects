@@ -5,6 +5,7 @@ import sys
 #----FUNCTION DEFINITIONS-------
 def main():
     find_replace()
+    
 def find_replace():
     for line in fileinput.FileInput("test.txt", inplace=1):
         char = line[0]
