@@ -73,7 +73,7 @@ def regexMatch(pattern, x):
 def compLineChange():
     #@@ -11,6 +11,6 @@ ohh, its line 10 now
     # compilation for regex to find line change denotations:
-    return re.compile("([\D]+)(-)([\d]+)(,)([\d]+)([\D]+)(\+)([\d]+)(,)([\d]+)([\D]+)")
+    return re.compile("([\D]+)(-)([\d]+)(,)([\d]+)([\D]+)(\+)([\d]+)(,)([\d]+)([\D]+)(.+)(\n)")
 
 def compProgChange():
     #compilation for regex to find program changes:
@@ -115,8 +115,6 @@ def manipLineNums(singlePgm):
             counter = processLineRange(singlePgm, i, "none")
         #we want to add the current section's counter first before we add
         #that amount to the rolling counter
-        print(singlePgm[i])
-        print(rollingCounter)
         modifiedLine = modifyChangeIndicatorLine(singlePgm, i, counter, rollingCounter)
         singlePgm[i] = modifiedLine
         rollingCounter += counter
@@ -161,14 +159,15 @@ def modifyChangeIndicatorLine(singlePgm, i, counter, rollingCounter):
     # 8 and 10 represent where the new section begins, and the section size
     # the rolling counter will affect where the sections begin, not the size of them
     # the counter will affect the size of the added section
-    #there are 12 groups from 1 - 12
-    for n in range(1,12):
+    #there are 14 groups from 1 - 14
+    for n in range(1,14):
         if (n==10):
             replLine.append(strIntAdder(lineMatch.group(n),counter))
         elif (n==3)|(n==8):
             replLine.append(strIntAdder(lineMatch.group(n),rollingCounter))
         else:
             replLine.append(lineMatch.group(n))
+    print(''.join(replLine))
     return ''.join(replLine)
 
 def strIntAdder(target, addedAmt):
