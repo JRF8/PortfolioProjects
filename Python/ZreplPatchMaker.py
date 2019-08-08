@@ -115,6 +115,8 @@ def manipLineNums(singlePgm):
             counter = processLineRange(singlePgm, i, "none")
         #we want to add the current section's counter first before we add
         #that amount to the rolling counter
+        print(singlePgm[i])
+        print(rollingCounter)
         modifiedLine = modifyChangeIndicatorLine(singlePgm, i, counter, rollingCounter)
         singlePgm[i] = modifiedLine
         rollingCounter += counter
