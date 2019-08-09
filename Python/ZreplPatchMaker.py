@@ -15,12 +15,12 @@ def main():
     f2.close()
 
 def loopOrigLineList(lineList):
-    patProgChange = compProgChange()
+    patPgmInfo = compPgmInfo()
     newLineList = []
     newLineSubList = []
     #flg will indicate if we are modifying the contents of the patch in this area.
     for line in lineList:
-        if regexMatch(patProgChange, line):
+        if regexMatch(patPgmInfo, line):
             newLineList = appendAList(newLineList, newLineSubList)
             newLineSubList = []
             newLineSubList.append(line)
@@ -39,10 +39,13 @@ def appendAList(a1, a2):
     return a1
 
 def isNprLogic(line):
-    if line.endswith(".npr-logic\n"):
-        return True
-    else:
+    patPgmInfo = compPgmInfo()
+    if regexMatch(patPgmInfo, line) == False:
         return False
+    elif patPgmInfo.match(line).group(3) != ".npr-logic":
+        return False
+    else:
+        return True
 
 def openOriginal():
     #open a file
@@ -75,21 +78,21 @@ def compLineChange():
     # compilation for regex to find line change denotations:
     return re.compile("([\D]+)(-)([\d]+)(,)([\d]+)([\D]+)(\+)([\d]+)(,)([\d]+)([\D]+)(.+)(\n)")
 
-def compProgChange():
-    #compilation for regex to find program changes:
-    return re.compile("^[Dd]iff")
-
 def compPgmInfo():
+    #compilation for regex to find program name info
+    return re.compile("(^[Ii]ndex)(.+)(.npr-[\w]+)(.+)")
+
+def compPgmChange():
     #--- a/test1.npr-logic
-    #compilation for regex to locate pgm name line
+    #compilation for regex to locate the +/- info for the pgm
     return re.compile("[-+]{3} .*.npr-[\w]+")
 
 def compPlusMinus():
     return re.compile("^[-+]")
 
 def processList(singlePgm):
-    #line at index 2
-    if isNprLogic(singlePgm[2]):
+    #top line of singlePgm should be the pgm info
+    if isNprLogic(singlePgm[0]):
         singlePgm = manipLineNums(singlePgm)
         singlePgm = manipZreplLines(singlePgm)
         return singlePgm
@@ -124,27 +127,27 @@ def manipLineNums(singlePgm):
 def processLineRange(singlePgm, begin, end):
     #this is where we will count the number of - lines in a section
     count = 0
-    pgmInfoLine = compPgmInfo()
+    patPgmChange = compPgmChange()
     if representsInt(end):
         for line in singlePgm[begin:end]:
-            if regexMatch(pgmInfoLine, line):
+            if regexMatch(patPgmChange, line):
                 None
             elif line[0] == "-":
                 count+=1
     else:
         for line in singlePgm[begin:]:
-            if regexMatch(pgmInfoLine, line):
+            if regexMatch(patPgmChange, line):
                 None
             elif line[0] == "-":
                 count+=1
     return count
 
 def isPlusMinusLine(line):
-    pgmInfoLine = compPgmInfo()
-    plusMinusLine = compPlusMinus()
-    if regexMatch(pgmInfoLine, line):
+    patPgmChange = compPgmChange()
+    patPlusMinus = compPlusMinus()
+    if regexMatch(patPgmChange, line):
         return False
-    elif regexMatch(plusMinusLine, line):
+    elif regexMatch(patPlusMinus, line):
         return True
     else:
         return False
@@ -167,7 +170,6 @@ def modifyChangeIndicatorLine(singlePgm, i, counter, rollingCounter):
             replLine.append(strIntAdder(lineMatch.group(n),rollingCounter))
         else:
             replLine.append(lineMatch.group(n))
-    print(''.join(replLine))
     return ''.join(replLine)
 
 def strIntAdder(target, addedAmt):
