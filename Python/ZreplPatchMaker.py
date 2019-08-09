@@ -42,7 +42,7 @@ def isNprLogic(line):
     patPgmInfo = compPgmInfo()
     if regexMatch(patPgmInfo, line) == False:
         return False
-    elif patPgmInfo.match(line).group(3) != ".npr-logic":
+    elif patPgmInfo.match(line).group(3) != ".npr-logic":s
         return False
     else:
         return True
@@ -80,7 +80,7 @@ def compLineChange():
 
 def compPgmInfo():
     #compilation for regex to find program name info
-    return re.compile("(^[Ii]ndex)(.+)(.npr-[\w]+)(.+)")
+    return re.compile("(^[Ii]ndex)(.+)(.npr-[\w]+)")
 
 def compPgmChange():
     #--- a/test1.npr-logic
@@ -92,7 +92,9 @@ def compPlusMinus():
 
 def processList(singlePgm):
     #top line of singlePgm should be the pgm info
+    print(singlePgm[0])
     if isNprLogic(singlePgm[0]):
+        print("WE FOUND ONE")
         singlePgm = manipLineNums(singlePgm)
         singlePgm = manipZreplLines(singlePgm)
         return singlePgm
@@ -170,6 +172,7 @@ def modifyChangeIndicatorLine(singlePgm, i, counter, rollingCounter):
             replLine.append(strIntAdder(lineMatch.group(n),rollingCounter))
         else:
             replLine.append(lineMatch.group(n))
+    print(''.join(replLine))
     return ''.join(replLine)
 
 def strIntAdder(target, addedAmt):
