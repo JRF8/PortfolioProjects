@@ -15,12 +15,12 @@ def main():
     f2.close()
 
 def loopOrigLineList(lineList):
-    patProgChange = compProgChange()
+    patPgmInfo = compPgmInfo()
     newLineList = []
     newLineSubList = []
     #flg will indicate if we are modifying the contents of the patch in this area.
     for line in lineList:
-        if regexMatch(patProgChange, line):
+        if regexMatch(patPgmInfo, line):
             newLineList = appendAList(newLineList, newLineSubList)
             newLineSubList = []
             newLineSubList.append(line)
@@ -39,10 +39,13 @@ def appendAList(a1, a2):
     return a1
 
 def isNprLogic(line):
-    if line.endswith(".npr-logic\n"):
-        return True
-    else:
+    patPgmInfo = compPgmInfo()
+    if regexMatch(patPgmInfo, line) == False:
         return False
+    elif patPgmInfo.match(line).group(3) != ".npr-logic":
+        return False
+    else:
+        return True
 
 def openOriginal():
     #open a file
@@ -73,23 +76,23 @@ def regexMatch(pattern, x):
 def compLineChange():
     #@@ -11,6 +11,6 @@ ohh, its line 10 now
     # compilation for regex to find line change denotations:
-    return re.compile("([\D]+)(-)([\d]+)(,)([\d]+)([\D]+)(\+)([\d]+)(,)([\d]+)([\D]+)")
-
-def compProgChange():
-    #compilation for regex to find program changes:
-    return re.compile("^[Dd]iff")
+    return re.compile("([\D]+)(-)([\d]+)(,)([\d]+)([\D]+)(\+)([\d]+)(,)([\d]+)([\D]+)(.+)(\n)")
 
 def compPgmInfo():
+    #compilation for regex to find program name info
+    return re.compile("(^[Ii]ndex)(.+)(.npr-[\w]+)")
+
+def compPgmChange():
     #--- a/test1.npr-logic
-    #compilation for regex to locate pgm name line
+    #compilation for regex to locate the +/- info for the pgm
     return re.compile("[-+]{3} .*.npr-[\w]+")
 
 def compPlusMinus():
     return re.compile("^[-+]")
 
 def processList(singlePgm):
-    #line at index 2
-    if isNprLogic(singlePgm[2]):
+    #top line of singlePgm should be the pgm info
+    if isNprLogic(singlePgm[0]):
         singlePgm = manipLineNums(singlePgm)
         singlePgm = manipZreplLines(singlePgm)
         return singlePgm
@@ -115,8 +118,6 @@ def manipLineNums(singlePgm):
             counter = processLineRange(singlePgm, i, "none")
         #we want to add the current section's counter first before we add
         #that amount to the rolling counter
-        print(singlePgm[i])
-        print(rollingCounter)
         modifiedLine = modifyChangeIndicatorLine(singlePgm, i, counter, rollingCounter)
         singlePgm[i] = modifiedLine
         rollingCounter += counter
@@ -126,27 +127,27 @@ def manipLineNums(singlePgm):
 def processLineRange(singlePgm, begin, end):
     #this is where we will count the number of - lines in a section
     count = 0
-    pgmInfoLine = compPgmInfo()
+    patPgmChange = compPgmChange()
     if representsInt(end):
         for line in singlePgm[begin:end]:
-            if regexMatch(pgmInfoLine, line):
+            if regexMatch(patPgmChange, line):
                 None
             elif line[0] == "-":
                 count+=1
     else:
         for line in singlePgm[begin:]:
-            if regexMatch(pgmInfoLine, line):
+            if regexMatch(patPgmChange, line):
                 None
             elif line[0] == "-":
                 count+=1
     return count
 
 def isPlusMinusLine(line):
-    pgmInfoLine = compPgmInfo()
-    plusMinusLine = compPlusMinus()
-    if regexMatch(pgmInfoLine, line):
+    patPgmChange = compPgmChange()
+    patPlusMinus = compPlusMinus()
+    if regexMatch(patPgmChange, line):
         return False
-    elif regexMatch(plusMinusLine, line):
+    elif regexMatch(patPlusMinus, line):
         return True
     else:
         return False
@@ -161,8 +162,8 @@ def modifyChangeIndicatorLine(singlePgm, i, counter, rollingCounter):
     # 8 and 10 represent where the new section begins, and the section size
     # the rolling counter will affect where the sections begin, not the size of them
     # the counter will affect the size of the added section
-    #there are 12 groups from 1 - 12
-    for n in range(1,12):
+    #there are 14 groups from 1 - 14
+    for n in range(1,14):
         if (n==10):
             replLine.append(strIntAdder(lineMatch.group(n),counter))
         elif (n==3)|(n==8):
@@ -192,13 +193,22 @@ def manipZreplLines(singlePgm):
     newSinglePgm = []
     for line in singlePgm:
         if isPlusMinusLine(line):
+            start = calculateSpaces(line)
             if line[0] == '-':
                 newSinglePgm.append(line)
-                newSinglePgm.append("+;~" + line[1:])
-            else: #must be a plus line
-                newSinglePgm.append("+~~" + line[1:])
+                newSinglePgm.append("+" + line[1:start] + ";~" + line[start:])
+            else:
+                newSinglePgm.append("+" + line[1:start] + "~~" + line[start:])
         else:
             newSinglePgm.append(line)
     return newSinglePgm
+
+def calculateSpaces(line):
+    # we don't want to put the zrepl ~~ or ;~ at the beginning if
+    # the line is indented
+    i = 1
+    while line[i] == " ":
+        i+=1
+    return i
 
 main()
