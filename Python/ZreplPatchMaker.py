@@ -42,7 +42,7 @@ def isNprLogic(line):
     patPgmInfo = compPgmInfo()
     if regexMatch(patPgmInfo, line) == False:
         return False
-    elif patPgmInfo.match(line).group(3) != ".npr-logic":s
+    elif patPgmInfo.match(line).group(3) != ".npr-logic":
         return False
     else:
         return True
@@ -92,9 +92,7 @@ def compPlusMinus():
 
 def processList(singlePgm):
     #top line of singlePgm should be the pgm info
-    print(singlePgm[0])
     if isNprLogic(singlePgm[0]):
-        print("WE FOUND ONE")
         singlePgm = manipLineNums(singlePgm)
         singlePgm = manipZreplLines(singlePgm)
         return singlePgm
@@ -172,7 +170,6 @@ def modifyChangeIndicatorLine(singlePgm, i, counter, rollingCounter):
             replLine.append(strIntAdder(lineMatch.group(n),rollingCounter))
         else:
             replLine.append(lineMatch.group(n))
-    print(''.join(replLine))
     return ''.join(replLine)
 
 def strIntAdder(target, addedAmt):
@@ -196,6 +193,7 @@ def manipZreplLines(singlePgm):
     newSinglePgm = []
     for line in singlePgm:
         if isPlusMinusLine(line):
+            start = calculateSpaces(line)
             if line[0] == '-':
                 newSinglePgm.append(line)
                 newSinglePgm.append("+;~" + line[1:])
@@ -204,5 +202,13 @@ def manipZreplLines(singlePgm):
         else:
             newSinglePgm.append(line)
     return newSinglePgm
+
+def calculateSpaces(line):
+    # we don't want to put the zrepl ~~ or ;~ at the beginning if
+    # the line is indented
+    i = 1
+    while line[i] == " ":
+        i+=1
+    return i
 
 main()
