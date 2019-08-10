@@ -196,9 +196,8 @@ def manipZreplLines(singlePgm):
             start = calculateSpaces(line)
             if line[0] == '-':
                 newSinglePgm.append(line)
-                newSinglePgm.append("+;~" + line[1:])
-            else: #must be a plus line
-                newSinglePgm.append("+~~" + line[1:])
+            #run this line regardless if line[0] is + or -
+            newLine1.append(line[0] + line[1:start] + "~~" + line[start:])
         else:
             newSinglePgm.append(line)
     return newSinglePgm
