@@ -29,18 +29,14 @@ def promptInput():
         return False, False, False
 
 def promptFileLoop():
-    print("in prompt file loop")
     fileFlg = False
     cancelFlg = False
     # will use flags to indicate still accepting input
     while (fileFlg == False) and (cancelFlg == False):
-        print("while loop....")
         title = input("Enter a book title: ")
         if title == "":
-            print("")
             cancelFlag = True
         else:
-            print("hereee in the else")
             fname = convertTitleToFile(title)
             f1 = openFile(fname)
             if f1 == "None":
