@@ -50,7 +50,8 @@ def convertTitleToFile(title):
     return title.lower().replace(' ','_') + ".txt"
 
 def openFile(fname):
-    fullPath = '/Users/jessefrazier/Documents/BookNotes/' + fname
+    homeEnv = os.getenv("HOME")
+    fullPath = homeEnv + '/Documents/BookNotes/' + fname
     if os.path.exists(fullPath):
         f1 = open(fullPath,'a+')
         return f1
