@@ -10,6 +10,7 @@ def main():
         print("BookNotes cancelled")
     else:
         tStamp = getDateTime()
+        f1.write("\n")
         f1.write(tStamp + "\n")
         f1.write("Pages: " + pages + "\n")
         f1.write("Notes: " + freeTxt + "\n")
